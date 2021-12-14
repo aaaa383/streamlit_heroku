@@ -202,6 +202,49 @@ plt.legend(fontsize=6)
 plt.tick_params(labelsize=6)
 st.pyplot(fig)
 
+import streamlit as st
+import pandas as pd
+from matplotlib import pyplot as plt
+
+# タイトルを表示
+st.title('AutoMLツール')
+
+uploaded_file = st.sidebar.file_uploader("CSVファイルをドラッグ&ドロップ、またはブラウザから選択してください", type='csv', key='train')
+if uploaded_file is not None:
+
+    #データの読込み
+    df = pd.read_csv(uploaded_file)
+
+    #データの表示
+    if st.sidebar.checkbox('データの中身と基本統計量を表示しますか？'):
+        st.markdown("### 1. アップロードされたデータを確認します")
+        st.dataframe(df)
+
+        st.markdown('### 2. 行数と列数を確認します')
+        st.markdown(df.shape)
+
+        st.markdown("### 3. 基本統計量を確認します")
+        st.dataframe(df.describe())
+
+        st.markdown("### 4. 相関係数を確認します")
+        st.dataframe(df.corr())
+
+    Target = st.sidebar.selectbox(
+        '目的変数を選択してください',
+        df.columns
+    )
+
+    # チェック時に目的変数と説明変数の相関を可視化
+    if st.sidebar.checkbox('相関係数の可視化'):
+        checked_variable = st.selectbox(
+            '説明変数を1つ選択してください:',
+            df.select_dtypes(include='number').columns
+        )
+        fig, ax = plt.subplots(figsize=(5, 3))
+        ax.scatter(x=df[checked_variable], y=df[Target])
+        plt.xlabel(checked_variable)
+        plt.ylabel(Target)
+        st.pyplot(fig)
 
 
 
